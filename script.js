@@ -4,11 +4,11 @@ const cid = [
   ['NICKEL', 2.05],
   ['DIME', 3.1],
   ['QUARTER', 4.25],
-  ['ONE"', 90],
+  ['ONE', 90],
   ['FIVE', 55],
   ['TEN', 20],
   ['TWENTY', 60],
-  ['ONE HUNDRED', 100]
+  ['ONE HUNDRED', 100],
 ];
 
 document.getElementById('purchase-btn').addEventListener('click', calculateChange);
@@ -20,17 +20,17 @@ function calculateChange() {
   const cash = parseFloat(cashInput.value);
 
   if (Number.isNaN(cash)) {
-    alert("Please enter a valid number");
+    alert('Please enter a valid number');
     return;
   }
 
   if (cash < price) {
-    alert("Customer does not have enough money to purchase the item");
+    alert('Customer does not have enough money to purchase the item');
     return;
   }
 
   if (cash === price) {
-    changeDueElement.textContent = "No change due - customer paid with exact cash";
+    changeDueElement.textContent = 'No change due - customer paid with exact cash';
     return;
   }
 
@@ -40,37 +40,33 @@ function calculateChange() {
 }
 
 function calculateActualChange(cash, changeDueElement) {
-  let changeDue = [];
-  let changeRequired = cash - price;
-
-  function roundToTwoDecimal(num) {
-    return Math.round(num * 100) / 100;
-  }
+  const roundToTwoDecimal = (num) => Math.round(num * 100) / 100;
 
   const denominations = [
-    ["ONE HUNDRED", 100.00],
-    ["TWENTY", 20.00],
-    ["TEN", 10.00],
-    ["FIVE", 5.00],
-    ["ONE", 1.00],
-    ["QUARTER", 0.25],
-    ["DIME", 0.10],
-    ["NICKEL", 0.05],
-    ["PENNY", 0.01]
+    ['ONE HUNDRED', 100.0],
+    ['TWENTY', 20.0],
+    ['TEN', 10.0],
+    ['FIVE', 5.0],
+    ['ONE', 1.0],
+    ['QUARTER', 0.25],
+    ['DIME', 0.1],
+    ['NICKEL', 0.05],
+    ['PENNY', 0.01],
   ];
 
-  function getTotalCID() {
-    return cid.reduce((total, denom) => total + denom[1], 0);
-  }
+  const getTotalCID = () => cid.reduce((total, denom) => total + denom[1], 0);
 
   const totalCID = getTotalCID();
-  if (totalCID < changeRequired) {
-    changeDueElement.textContent = "Status: INSUFFICIENT_FUNDS";
+  if (totalCID < cash - price) {
+    changeDueElement.textContent = 'Status: INSUFFICIENT_FUNDS';
     return;
   }
 
-  for (let [denomName, denomValue] of denominations) {
-    let denomAmount = cid.find(item => item[0] === denomName)[1];
+  let changeDue = [];
+  let changeRequired = cash - price;
+
+  for (const [denomName, denomValue] of denominations) {
+    let denomAmount = cid.find((item) => item[0] === denomName)[1];
     let denomCount = 0;
 
     while (changeRequired >= denomValue && denomAmount >= denomValue) {
@@ -85,12 +81,12 @@ function calculateActualChange(cash, changeDueElement) {
   }
 
   if (changeRequired > 0) {
-    changeDueElement.textContent = "Status: INSUFFICIENT_FUNDS";
+    changeDueElement.textContent = 'Status: INSUFFICIENT_FUNDS';
     return;
   }
 
-  let changeDueString = "Status: OPEN ";
-  changeDue.forEach(item => {
+  let changeDueString = 'Status: OPEN ';
+  changeDue.forEach((item) => {
     changeDueString += `${item[0]}: $${item[1].toFixed(2)}, `;
   });
   changeDueString = changeDueString.slice(0, -2);
@@ -98,8 +94,8 @@ function calculateActualChange(cash, changeDueElement) {
   changeDueElement.textContent = changeDueString;
 
   if (totalCID === cash - price) {
-    changeDueString = "Status: CLOSED ";
-    changeDue.forEach(item => {
+    changeDueString = 'Status: CLOSED ';
+    changeDue.forEach((item) => {
       changeDueString += `${item[0]}: $${item[1].toFixed(2)}, `;
     });
     changeDueString = changeDueString.slice(0, -2);
