@@ -63,7 +63,7 @@ function calculateActualChange(cash, changeDueElement) {
   const changeDue = [];
   let changeRequired = cash - price;
 
-  for (const [denomName, denomValue] of denominations) {
+  denominations.forEach(([denomName, denomValue]) => {
     let denomAmount = cid.find((item) => item[0] === denomName)[1];
     let denomCount = 0;
 
@@ -76,7 +76,7 @@ function calculateActualChange(cash, changeDueElement) {
     if (denomCount > 0) {
       changeDue.push([denomName, roundToTwoDecimal(denomCount * denomValue)]);
     }
-  }
+  });
 
   if (changeRequired > 0) {
     changeDueElement.textContent = 'Status: INSUFFICIENT_FUNDS';
