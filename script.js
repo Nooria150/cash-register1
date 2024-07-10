@@ -11,8 +11,6 @@ const cid = [
   ['ONE HUNDRED', 100],
 ];
 
-document.getElementById('purchase-btn').addEventListener('click', calculateChange);
-
 function calculateChange() {
   const cashInput = document.getElementById('cash');
   const changeDueElement = document.getElementById('change-due');
@@ -102,3 +100,5 @@ function calculateActualChange(cash, changeDueElement) {
     changeDueElement.textContent = changeDueString;
   }
 }
+
+document.getElementById('purchase-btn').addEventListener('click', calculateChange);
