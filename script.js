@@ -11,6 +11,10 @@ const cid = [
   ['ONE HUNDRED', 100],
 ];
 
+calculateActualChange(cash, changeDueElement);
+
+cashInput.value = '';
+
 function calculateChange() {
   const cashInput = document.getElementById('cash');
   const changeDueElement = document.getElementById('change-due');
@@ -18,12 +22,12 @@ function calculateChange() {
   const cash = parseFloat(cashInput.value);
 
   if (Number.isNaN(cash)) {
-    alert('Please enter a valid number');
+    changeDueElement.textContent = 'Please enter a valid number';
     return;
   }
 
   if (cash < price) {
-    alert('Customer does not have enough money to purchase the item');
+    changeDueElement.textContent = 'Customer does not have enough money to purchase the item';
     return;
   }
 
@@ -32,9 +36,6 @@ function calculateChange() {
     return;
   }
 
-  calculateActualChange(cash, changeDueElement);
-
-  cashInput.value = '';
 }
 
 function calculateActualChange(cash, changeDueElement) {
@@ -60,7 +61,7 @@ function calculateActualChange(cash, changeDueElement) {
     return;
   }
 
-  let changeDue = [];
+  const changeDue = [];
   let changeRequired = cash - price;
 
   for (const [denomName, denomValue] of denominations) {
@@ -70,7 +71,7 @@ function calculateActualChange(cash, changeDueElement) {
     while (changeRequired >= denomValue && denomAmount >= denomValue) {
       changeRequired = roundToTwoDecimal(changeRequired - denomValue);
       denomAmount = roundToTwoDecimal(denomAmount - denomValue);
-      denomCount++;
+      denomCount`+= 1`;
     }
 
     if (denomCount > 0) {
