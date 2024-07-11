@@ -16,6 +16,21 @@ function displayMessage(message) {
   changeDueElement.textContent = message;
 }
 
+function calculateActualChange(cash) {
+  const roundToTwoDecimal = (num) => Math.round(num * 100) / 100;
+
+  const denominations = [
+    ['ONE HUNDRED', 100.0],
+    ['TWENTY', 20.0],
+    ['TEN', 10.0],
+    ['FIVE', 5.0],
+    ['ONE', 1.0],
+    ['QUARTER', 0.25],
+    ['DIME', 0.1],
+    ['NICKEL', 0.05],
+    ['PENNY', 0.01],
+  ];
+  
 function calculateChange() {
   const cashInput = document.getElementById('cash');
   const cash = parseFloat(cashInput.value);
@@ -38,21 +53,6 @@ function calculateChange() {
   calculateActualChange(cash);
   cashInput.value = '';
 }
-
-function calculateActualChange(cash) {
-  const roundToTwoDecimal = (num) => Math.round(num * 100) / 100;
-
-  const denominations = [
-    ['ONE HUNDRED', 100.0],
-    ['TWENTY', 20.0],
-    ['TEN', 10.0],
-    ['FIVE', 5.0],
-    ['ONE', 1.0],
-    ['QUARTER', 0.25],
-    ['DIME', 0.1],
-    ['NICKEL', 0.05],
-    ['PENNY', 0.01],
-  ];
 
   const getTotalCID = () => cid.reduce((total, denom) => total + denom[1], 0);
   const totalCID = getTotalCID();
