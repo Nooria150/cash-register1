@@ -31,7 +31,7 @@ function calculateChange() {
   }
 
   if (cash === price) {
-    displayMessage ('No change due - customer paid with exact cash');
+    displayMessage('No change due - customer paid with exact cash');
     return;
   }
 
