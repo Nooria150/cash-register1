@@ -26,7 +26,7 @@ function calculateChange() {
   }
 
   if (cash < price) {
-    alert('Customer does not have enough money to purchase the item');//eslint-disable-next-line no-alert
+    alert('Customer does not have enough money to purchase the item');// eslint-disable-next-line no-alert
     return;
   }
 
