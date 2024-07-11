@@ -11,14 +11,17 @@ const cid = [
   ['ONE HUNDRED', 100],
 ];
 
+function displayMessage(message) {
+  const changeDueElement = document.getElementById('change-due');
+  changeDueElement.textContent = message;
+}
+
 function calculateChange() {
   const cashInput = document.getElementById('cash');
-  const changeDueElement = document.getElementById('change-due');
-
   const cash = parseFloat(cashInput.value);
 
   if (Number.isNaN(cash)) {
-    changeDueElement.textContent = 'Please enter a valid number';
+    displayMessage('Please enter a valid number');
     return;
   }
 
@@ -28,16 +31,15 @@ function calculateChange() {
   }
 
   if (cash === price) {
-    changeDueElement.textContent = 'No change due - customer paid with exact cash';
+    displayMessage('No change due - customer paid with exact cash');
     return;
   }
 
-  calculateActualChange(cash, changeDueElement);
-
+  calculateActualChange(cash);
   cashInput.value = '';
 }
 
-function calculateActualChange(cash, changeDueElement) {
+function calculateActualChange(cash) {
   const roundToTwoDecimal = (num) => Math.round(num * 100) / 100;
 
   const denominations = [
@@ -53,10 +55,10 @@ function calculateActualChange(cash, changeDueElement) {
   ];
 
   const getTotalCID = () => cid.reduce((total, denom) => total + denom[1], 0);
-
   const totalCID = getTotalCID();
+
   if (totalCID < cash - price) {
-    changeDueElement.textContent = 'Status: INSUFFICIENT_FUNDS';
+    displayMessage('Status: INSUFFICIENT_FUNDS');
     return;
   }
 
@@ -79,7 +81,7 @@ function calculateActualChange(cash, changeDueElement) {
   });
 
   if (changeRequired > 0) {
-    changeDueElement.textContent = 'Status: INSUFFICIENT_FUNDS';
+    displayMessage('Status: INSUFFICIENT_FUNDS');
     return;
   }
 
@@ -89,7 +91,7 @@ function calculateActualChange(cash, changeDueElement) {
   });
   changeDueString = changeDueString.slice(0, -2);
 
-  changeDueElement.textContent = changeDueString;
+  displayMessage(changeDueString);
 
   if (totalCID === cash - price) {
     changeDueString = 'Status: CLOSED ';
@@ -97,7 +99,7 @@ function calculateActualChange(cash, changeDueElement) {
       changeDueString += `${item[0]}: $${item[1].toFixed(2)}, `;
     });
     changeDueString = changeDueString.slice(0, -2);
-    changeDueElement.textContent = changeDueString;
+    displayMessage(changeDueString);
   }
 }
 
