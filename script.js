@@ -16,30 +16,6 @@ function displayMessage(message) {
   changeDueElement.textContent = message;
 }
 
-function calculateChange() {
-  const cashInput = document.getElementById('cash');
-  const cash = parseFloat(cashInput.value);
-
-  if (Number.isNaN(cash)) {
-    displayMessage('Please enter a valid number');
-    return;
-  }
-
-  if (cash < price) {
-    // eslint-disable-next-line no-alert
-    alert('Customer does not have enough money to purchase the item');
-    return;
-  }
-
-  if (cash === price) {
-    displayMessage('No change due - customer paid with exact cash');
-    return;
-  }
-
-  calculateActualChange(cash);
-  cashInput.value = '';
-}
-
 function calculateActualChange(cash) {
   const roundToTwoDecimal = (num) => Math.round(num * 100) / 100;
 
@@ -102,6 +78,30 @@ function calculateActualChange(cash) {
     changeDueString = changeDueString.slice(0, -2);
     displayMessage(changeDueString);
   }
+}
+
+function calculateChange() {
+  const cashInput = document.getElementById('cash');
+  const cash = parseFloat(cashInput.value);
+
+  if (Number.isNaN(cash)) {
+    displayMessage('Please enter a valid number');
+    return;
+  }
+
+  if (cash < price) {
+    // eslint-disable-next-line no-alert
+    alert('Customer does not have enough money to purchase the item');
+    return;
+  }
+
+  if (cash === price) {
+    displayMessage('No change due - customer paid with exact cash');
+    return;
+  }
+
+  calculateActualChange(cash);
+  cashInput.value = '';
 }
 
 document.getElementById('purchase-btn').addEventListener('click', calculateChange);
