@@ -23,7 +23,7 @@ function calculateChange() {
   }
 
   if (cash < price) {
-    changeDueElement.textContent = 'Customer does not have enough money to purchase the item';
+    alert('Customer does not have enough money to purchase the item');
     return;
   }
 
