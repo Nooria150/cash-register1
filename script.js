@@ -1,4 +1,4 @@
-const price = 19.5;
+const price = 25;
 const cid = [
   ['PENNY', 1.01],
   ['NICKEL', 2.05],
@@ -11,97 +11,115 @@ const cid = [
   ['ONE HUNDRED', 100],
 ];
 
-function displayMessage(message) {
-  const changeDueElement = document.getElementById('change-due');
-  changeDueElement.textContent = message;
-}
+const displayChangeDue = document.getElementById('change-due');
+const cash = document.getElementById('cash');
+const purchaseBtn = document.getElementById('purchase-btn');
+const priceScreen = document.getElementById('price-screen');
+const cashDrawerDisplay = document.getElementById('cash-drawer-display');
 
-function calculateActualChange(cash) {
-  const roundToTwoDecimal = (num) => Math.round(num * 100) / 100;
+const updateUI = (change) => {
+  const currencyNameMap = {
+    PENNY: 'Pennies',
+    NICKEL: 'Nickels',
+    DIME: 'Dimes',
+    QUARTER: 'Quarters',
+    ONE: 'Ones',
+    FIVE: 'Fives',
+    TEN: 'Tens',
+    TWENTY: 'Twenties',
+    'ONE HUNDRED': 'Hundreds',
+  };
 
-  const denominations = [
-    ['ONE HUNDRED', 100.0],
-    ['TWENTY', 20.0],
-    ['TEN', 10.0],
-    ['FIVE', 5.0],
-    ['ONE', 1.0],
-    ['QUARTER', 0.25],
-    ['DIME', 0.1],
-    ['NICKEL', 0.05],
-    ['PENNY', 0.01],
-  ];
-
-  const getTotalCID = () => cid.reduce((total, denom) => total + denom[1], 0);
-  const totalCID = getTotalCID();
-
-  if (totalCID < cash - price) {
-    displayMessage('Status: INSUFFICIENT_FUNDS');
-    return;
-  }
-
-  const changeDue = [];
-  let changeRequired = cash - price;
-
-  denominations.forEach(([denomName, denomValue]) => {
-    let denomAmount = cid.find((item) => item[0] === denomName)[1];
-    let denomCount = 0;
-
-    while (changeRequired >= denomValue && denomAmount >= denomValue) {
-      changeRequired = roundToTwoDecimal(changeRequired - denomValue);
-      denomAmount = roundToTwoDecimal(denomAmount - denomValue);
-      denomCount += 1;
-    }
-
-    if (denomCount > 0) {
-      changeDue.push([denomName, roundToTwoDecimal(denomCount * denomValue)]);
-    }
-  });
-
-  if (changeRequired > 0) {
-    displayMessage('Status: INSUFFICIENT_FUNDS');
-    return;
-  }
-
-  let changeDueString = 'Status: OPEN ';
-  changeDue.forEach((item) => {
-    changeDueString += `${item[0]}: $${item[1].toFixed(2)}, `;
-  });
-  changeDueString = changeDueString.slice(0, -2);
-
-  displayMessage(changeDueString);
-
-  if (totalCID === cash - price) {
-    changeDueString = 'Status: CLOSED ';
-    changeDue.forEach((item) => {
-      changeDueString += `${item[0]}: $${item[1].toFixed(2)}, `;
+  if (change) {
+    change.forEach(([changeDenomination, changeAmount]) => {
+      const targetArr = cid.find(([denominationName]) => denominationName === changeDenomination);
+      targetArr[1] = (Math.round(targetArr[1] * 100) - Math.round(changeAmount * 100)) / 100;
     });
-    changeDueString = changeDueString.slice(0, -2);
-    displayMessage(changeDueString);
-  }
-}
-
-function calculateChange() {
-  const cashInput = document.getElementById('cash');
-  const cash = parseFloat(cashInput.value);
-
-  if (Number.isNaN(cash)) {
-    displayMessage('Please enter a valid number');
-    return;
   }
 
-  if (cash < price) {
-    // eslint-disable-next-line no-alert
+  cash.value = '';
+  priceScreen.textContent = `Total: $${price}`;
+  cashDrawerDisplay.innerHTML = `<p><strong>Change in drawer:</strong></p>
+    ${cid.map(([denominationName, amount]) => `<p>${currencyNameMap[denominationName]}: $${amount}</p>`).join('')}`;
+};
+
+const formatResults = (status, change) => {
+  displayChangeDue.innerHTML = `<p>Status: ${status}</p>`;
+  displayChangeDue.innerHTML += change.map(([denominationName, amount]) => `<p>${denominationName}: $${amount}</p>`).join('');
+};
+
+const checkCashRegister = () => {
+  const cashInCents = Math.round(Number(cash.value) * 100);
+  const priceInCents = Math.round(price * 100);
+
+  if (cashInCents < priceInCents) { // eslint-disable-next-line no-alert
     alert('Customer does not have enough money to purchase the item');
+    cash.value = '';
     return;
   }
 
-  if (cash === price) {
-    displayMessage('No change due - customer paid with exact cash');
+  if (cashInCents === priceInCents) {
+    displayChangeDue.innerHTML = '<p>No change due - customer paid with exact cash</p>';
+    cash.value = '';
     return;
   }
 
-  calculateActualChange(cash);
-  cashInput.value = '';
-}
+  let changeDue = cashInCents - priceInCents;
+  const reversedCid = [...cid]
+    .reverse()
+    .map(([denominationName, amount]) => [
+      denominationName,
+      Math.round(amount * 100),
+    ]);
+  const denominations = [10000, 2000, 1000, 500, 100, 25, 10, 5, 1];
+  const result = { status: 'OPEN', change: [] };
+  const totalCID = reversedCid.reduce((prev, [, amount]) => prev + amount, 0);
 
-document.getElementById('purchase-btn').addEventListener('click', calculateChange);
+  if (totalCID < changeDue) {
+    displayChangeDue.innerHTML = '<p>Status: INSUFFICIENT_FUNDS</p>';
+    return;
+  }
+
+  if (totalCID === changeDue) {
+    result.status = 'CLOSED';
+  }
+
+  for (let i = 0; i < reversedCid.length; i += 1) {
+    if (changeDue >= denominations[i] && changeDue > 0) {
+      const [denominationName, total] = reversedCid[i];
+      const possibleChange = Math.min(total, changeDue);
+      const count = Math.floor(possibleChange / denominations[i]);
+      const amountInChange = count * denominations[i];
+      changeDue -= amountInChange;
+
+      if (count > 0) {
+        result.change.push([denominationName, amountInChange / 100]);
+      }
+    }
+  }
+
+  if (changeDue > 0) {
+    displayChangeDue.innerHTML = '<p>Status: INSUFFICIENT_FUNDS</p>';
+    return;
+  }
+
+  formatResults(result.status, result.change);
+  updateUI(result.change);
+};
+
+const checkResults = () => {
+  if (!cash.value) {
+    return;
+  }
+  checkCashRegister();
+};
+
+purchaseBtn.addEventListener('click', checkResults);
+
+cash.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    checkResults();
+  }
+});
+
+updateUI();
